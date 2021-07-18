@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script>
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const commentId = urlParams.get("commentId"); 
+
+        $(document).ready(function () {
+            getComment();
+               
+            });
+        
+        
+        function getComment() {
+            $('#wrap').empty();
+            $.ajax({
+                type: "GET",
+                url: `/api/modify/${commentId}` , 
+                data: {},
+                headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+
+                success: function (response) {
+                    if(response['errorMessage']){
+                    alert(response['errorMessage'])
+                    window.location.href='/login'
+                    return;                                            
+                    }
+                    const comment = response['comment']
+                    
+                    let temp_html= `<div class = comment-box>
+    
+                                        <div class="form-group">
+                                        <label for="exampleFormControlTextarea1"></label>
+                                        <textarea class="form-control" id="comment-content" rows="3">${comment}</textarea>
+                                        </div>
+                                        <button onclick="modifyComment()" type="button" class="btn btn-dark modify-btn">저장하기</button>
+                                        <button onclick="deleteComment()" type="button" class="btn btn-dark delete-btn">삭제하기</button>
+
+                                    </div>`
+                    $('#wrap').append(temp_html)
+                }
+            })
+        }
+
+        function modifyComment() {
+            const comment = $('#comment-content').val();
+            $.ajax({
+                type: "PUT",
+                url: `/api/modify2/${commentId}` , 
+                data: {
+                    comment:comment,
+                },
+                headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+
+                success: function (response) {
+                    if(response['errorMessage']){
+                    alert(response['errorMessage'])
+                    window.location.href='/login'
+                    return;                                            
+                    }
+                    if (response['result']=="success"){
+                        alert("수정이 완료됐습니다.")
+                        const postId = response['postId']
+                        window.location.href=`/comment?postId=${postId}`
+                        
+                    }
+                }
+            })
+    }
+
+
+        function deleteComment() {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/delete/${commentId}` , 
+                data: {},
+                headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+
+                success: function (response) {
+                    if(response['errorMessage']){
+                    alert(response['errorMessage'])
+                    window.location.href='/login'
+                    return;                                            
+                    }
+                    if (response['result']=="success"){
+                        alert("삭제가 완료됐습니다.")
+                        const postId = response['postId']
+                        window.location.href=`/comment?postId=${postId}`
+                        
+                    }
+                }
+            })
+        }
+
+
+        
+
+        
+    </script>
+
+    <title>수정 페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+    
+    <style>
+        * {
+            font-family: 'Song Myung', serif;
+        }
+        .comment-box{
+            width: 500px;
+            margin: 50px auto;
+            border-style: solid;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .table {
+            width: 500px;
+            margin: 50px auto;
+            border-style: solid;
+            padding: 10px;
+        }
+        .title{
+            text-align: center;
+            margin-top: 50px;
+            
+        }
+        .modify-btn{
+            margin: auto;
+            display: block;
+        }
+        .delete-btn{
+            margin: auto;
+            display: block;
+        }
+        
+        .card{
+            margin: 50px auto 20px;
+            border-radius: 10px;
+            border-style: ridge;
+        }
+    </style>
+</head>
+
+<body>
+<h1 class="title">수정하기</h1>
+
+<div id="wrap">
+    <div class = comment-box>
+    
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1"></label>
+          <textarea class="form-control" id="comment-content" rows="3"></textarea>
+        </div>
+        <button onclick="postComment()" type="button" class="btn btn-dark post-btn">작성하기</button>
+    
+    </div>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script>
+        
+        function logIn(){
+            window.location.href="/login"
+        }
+        function logOut(){
+            localStorage.clear();
+            alert("로그아웃되었습니다.")
+            window.location.reload();
+        }
+        
+         $(document).ready(function () {
+            if(localStorage.getItem("token")===null){
+            $('#logout-id').hide();
+            }else{
+            $('#login-id').hide();
+        }
+        
+                getContents();
+            });
+
+        function getContents() {
+            $('#post-card').empty();
+            $.ajax({
+                type: "GET",
+                url: '/api/contents' ,
+                data: {},
+                success: function (response) {
+                    let postings = response['postings']
+
+                    for(let i = postings.length -1; i >= 0; i--){
+                        const title = postings[i]['title']
+                        const name = postings[i]['name']
+                        const content = postings[i]['content']
+                        const postId = postings[i]['postId']
+
+                  
+
+                        let temp_html = `<div class="card" style="width: 30rem;">
+                                            <div class="card-body">
+                                            <h5 class="card-title">${title}</h5>
+                                            <p class="card-text">${content}</p>
+                                            <p class="card-text">-${name}-</p>
+                                            <a href="/comment?postId=${postId}" class="btn btn-primary">자세히 보기</a>
+                                        
+                                            </div>
+                                        </div>`
+                        $('#post-card').append(temp_html)
+                    }
+                    
+        
+                    
+                }
+            })
+        }
+    </script>
+
+    <title>자유게시판</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+    <script>
+        function posting(){
+            location.href = '/posting'
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Song Myung', serif;
+        }
+        .wrap {
+            margin-top: 70px;
+        }
+        .card{
+            margin:auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-style: solid;
+        }
+        .title{
+            text-align: center;
+            margin-top: 50px;
+        }
+        .post-btn{
+            margin-bottom: 7%;
+            margin-left: 80%;
+        }
+        .login-btn{
+            margin-bottom: 7%;
+        }
+        .card-text{
+            font-style: italic;
+        }
+        .logout-btn{
+            margin-bottom: 7%;
+        }
+        
+       
+    </style>
+</head>
+
+<body>
+<h1 class="title">자유게시판</h1>
+
+<a onclick = "posting()" class="btn btn-primary btn-lg active post-btn" role="button" aria-pressed="true">글 작성</a>
+<a onclick = "logIn()" id="login-id"class="btn btn-primary btn-lg active login-btn" role="button" aria-pressed="true">로그인</a>
+<a onclick = "logOut()" id="logout-id" class="btn btn-primary btn-lg active logout-btn" role="button" aria-pressed="true">로그아웃</a>
+
+<div class="wrap">
+    <div id = "post-card">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <p class="card-text">-name-</p>
+            <a href="/comment" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+</body>
+</html>

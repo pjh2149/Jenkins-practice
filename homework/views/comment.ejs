@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script>
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const postId = urlParams.get("postId"); 
+
+        $(document).ready(function () {
+                showComment();
+                getPosting();
+               
+            });
+        function back(){
+            window.location.href = '/'
+        }
+        
+        
+        function getPosting() {
+            $.ajax({
+                type: "GET",
+                url: `/api/comment3/${postId}` , 
+                data: {},
+                success: function (response) {
+                    const comment3 = response['comment3']
+                    const title = comment3[0]['title']
+                    const name = comment3[0]['name']
+                    const content = comment3[0]['content']
+                    
+                    
+                    let temp_html= `<div class="card" style="width: 30rem;">
+                                        <div class="card-body">
+                                        <h5 class="card-title">${title}</h5>
+                                        <p class="card-text">${content}</p>
+                                        <p class="card-text">-${name}-</p>
+                                        <button onclick="back()" type="button" class="btn btn-dark post-btn">돌아가기</button>
+
+                                    </div>`
+                    $('#post-card').append(temp_html)
+                }
+            })
+        }
+
+        function postComment() {
+            const comment = $('#comment-content').val()
+            
+            $.ajax({
+                type: "POST",
+                url: `/api/comment/${postId}` , 
+                data: {
+                    comment: comment
+                },
+                headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+            
+                success: function(response){
+                if(response['errorMessage']){
+                    alert(response['errorMessage'])
+                    window.location.href='/login'
+                    return;                                            
+                }
+                if(response['result'] = "success"){
+                    alert("작성이 완료됐습니다.")
+                    window.location.href=`/comment?postId=${postId}`
+                    
+                } 
+            }
+        })
+    }   
+
+        function showComment() {
+           
+            $.ajax({
+                type: "GET",
+                url: `/api/comment2/${postId}` , 
+                data: { },
+                success: function (response) {
+                    const comment2 = response['comment2']
+                    for(let i = comment2.length -1; i>=0; i--){
+                        let nickname = comment2[i]['nickname']
+                        let comment = comment2[i]['comment']
+                        let commentId = comment2[i]['_id']
+
+                        let temp_html = `<tr>
+                                            <th scope="row">${nickname}</th>
+                                            <td>${comment}</td>
+                                            <td><button><a href='/modify?commentId=${commentId}' id="modify-btn">수정</a></button></td>
+                                        </tr>`
+                        $('#table_body').append(temp_html);
+                    } 
+                }
+            })
+        }
+    </script>
+
+    <title>댓글 페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+    
+    <style>
+        * {
+            font-family: 'Song Myung', serif;
+        }
+        .comment-box{
+            width: 500px;
+            margin: 50px auto;
+            border-style: solid;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .table {
+            width: 500px;
+            margin: 50px auto;
+            border-style: solid;
+            padding: 10px;
+        }
+        .title{
+            text-align: center;
+            margin-top: 50px;
+            
+        }
+        .post-btn{
+            margin: auto;
+            display: block;
+        }
+        .card{
+            margin: 50px auto 20px;
+            border-radius: 10px;
+            border-style: ridge;
+        }
+    </style>
+</head>
+
+<body>
+<h1 class="title">댓글 게시판</h1>
+
+<div id = "post-card">
+    
+</div>
+
+<div class = comment-box>
+    
+    <div class="form-group">
+      <label for="exampleFormControlTextarea1"></label>
+      <textarea class="form-control" id="comment-content" rows="3"></textarea>
+    </div>
+    <button onclick="postComment()" type="button" class="btn btn-dark post-btn">작성하기</button>
+</div>
+
+
+<table class="table">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">닉네임</th>
+        <th scope="col">내용</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody id="table_body">
+    
+    </tbody>
+</table>
+
+</body>
+</html>

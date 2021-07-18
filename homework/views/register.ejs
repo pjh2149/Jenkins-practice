@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    
+
+    <title>회원가입 페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+    <script>
+        function register (){
+            const nickname = $('#user-nickname').val()
+            const password = $('#user-password').val()
+            const confirmPassword = $('#user-password-confirm').val()
+           
+            $.ajax({
+                type:"POST",
+                url: '/api/register',
+                data: {
+                    nickname: nickname,
+                    password: password,
+                    confirmPassword: confirmPassword
+                },
+                
+                success: function(response){
+                    if(response["result"]=="success"){
+                        alert("회원가입을 축하드립니다.")
+                        window.location.href="/login";        
+                    }else if(response["result"]=="passwordError"){                    
+                        alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+                    }else if(response["result"]=="existError"){
+                        alert("닉네임과 비밀번호를 다르게 해주세요.")
+                    }else if(response["result"]=="nicknameExist"){
+                        alert("중복된 닉네임입니다.")
+                    }else if(response["result"]=="formatError"){
+                        alert("회원가입 형식을 준수해주세요 ")
+                    }
+                }
+            })
+        }
+        
+    </script>
+    <style>
+        * {
+            font-family: 'Song Myung', serif;
+        }
+        .wrap{
+            width: 500px;
+            margin: auto;
+            margin-top: 30px;
+        }
+        .title{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class = "wrap">
+        <h1 class="title">회원가입 페이지</h1>
+        <div class="form-group">
+          <label for="exampleInputEmail1">닉네임</label>
+          <input type="email" class="form-control" id="user-nickname" aria-describedby="emailHelp" placeholder="닉네임을 입력하세요.">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">비밀번호</label>
+          <input type="password" class="form-control" id="user-password" placeholder="비밀번호를 입력하세요.">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">비밀번호 확인</label>
+            <input type="password" class="form-control" id="user-password-confirm" placeholder="비밀번호를 입력하세요.">
+          </div>
+        
+        <button type="submit" onclick="register()" class="btn btn-primary">회원가입</button>
+    </div>
+</body>
+</html>

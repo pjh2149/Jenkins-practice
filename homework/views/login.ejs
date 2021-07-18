@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    
+
+    <title>로그인 페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+    <script>
+        function register(){
+            location.href = '/register'
+        }
+        function login(){
+            const nickname = $('#login-nickname').val()
+            const password = $('#login-password').val()
+            $.ajax({
+                type:"POST",
+                url: '/api/auth',
+                data: {
+                    nickname: nickname,
+                    password: password,
+                },
+                
+                
+                success: function(response){
+                    if(response["result"]=="notExist"){
+                        alert("닉네임 또는 패스워드를 확인해주세요.")    
+                                        
+                    }else if(response["result"]=="success"){
+                        console.log(response['userId'])
+                        window.location.href = "/"
+                        alert("로그인 완료")
+                    }
+                    localStorage.setItem("token", response.token);
+                }
+            })
+                    
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Song Myung', serif;
+        }
+        .wrap{
+            width: 500px;
+            margin: auto;
+            margin-top: 30px;
+        }
+        .title{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class = "wrap">
+        <h1 class="title">로그인 페이지</h1>
+        <div class="form-group">
+          <label for="exampleInputEmail1">닉네임</label>
+          <input type="email" class="form-control" id="login-nickname" aria-describedby="emailHelp" placeholder="닉네임을 입력하세요.">
+          <small id="emailHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">비밀번호</label>
+          <input type="password" class="form-control" id="login-password" placeholder="비밀번호를 입력하세요.">
+        </div>
+        
+        <button type="submit" onclick="login()" class="btn btn-primary">로그인</button>
+        <button type="submit" onclick="register()" class="btn btn-primary">회원가입</button>
+    </div>
+</body>
+</html>
