@@ -25,7 +25,6 @@ const registerSchema = Joi.object({
 
 //회원가입 API
 router.post("/register", async(req,res)=>{
-  const{nickname, password, confirmPassword} = req.body
   try{
     const{nickname, password, confirmPassword} = await registerSchema.validateAsync(req.body)
 
